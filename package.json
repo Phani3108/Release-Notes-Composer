@@ -1,0 +1,39 @@
+{
+  "name": "worldclass-sdlc-suite",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "node src/index.js",
+    "test": "node --test tests/*.js",
+    "ci": "npm run check:preflight && node --test && npm run eval:rn && npm run audit:truth",
+    "audit:truth": "node scripts/truthAudit.js",
+    "audit:truth:strict": "node scripts/truthAudit.js --strict",
+    "demo:seed": "node scripts/seedDemoData.js",
+    "check:preflight": "node scripts/preflight.js",
+    "lock:truth": "node scripts/initTruthLock.js",
+    "eval:rn": "node scripts/evalReleaseNotes.js",
+    "phase:1": "npm run check:preflight && node scripts/runPhase1Demo.js",
+    "phase:2": "npm run check:preflight && node scripts/runPhase2Demo.js",
+    "phase:3": "npm run check:preflight && node scripts/runPhase3Demo.js",
+    "phase:4": "npm run check:preflight && node scripts/runPhase4Demo.js",
+    "phase:5": "npm run check:preflight && node scripts/runPhase5Demo.js",
+    "phase:6": "npm run check:preflight && node scripts/runPhase6Audit.js",
+    "phase:7": "npm run check:preflight && node scripts/runPhase7Demo.js",
+    "test:integrations": "node scripts/testMicrosoftIntegrations.js",
+    "demo:integrations": "node scripts/demoMicrosoftIntegrations.js",
+    "agent:run": "node scripts/runAgenticPlaybook.js",
+    "mcp:server": "node scripts/runMCPServer.js",
+    "demo:brief": "node scripts/generateDemoBrief.js"
+  },
+  "dependencies": {
+    "@azure/identity": "^4.11.1",
+    "@microsoft/microsoft-graph-client": "^3.0.7",
+    "axios": "^1.11.0",
+    "dotenv": "^17.2.1",
+    "express": "^4.19.2",
+    "isomorphic-fetch": "^3.0.0",
+    "node-fetch": "^3.3.2",
+    "yaml": "^2.8.1"
+  }
+}

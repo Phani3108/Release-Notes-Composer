@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Release Notes Composer - Local Test Page</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            background-color: #fafbfc;
+        }
+        .test-section h3 {
+            color: #34495e;
+            margin-top: 0;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #ecf0f1;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .success {
+            border-left-color: #27ae60;
+            background-color: #d5f4e6;
+        }
+        .error {
+            border-left-color: #e74c3c;
+            background-color: #fadbd8;
+        }
+        .status {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .status.success { color: #27ae60; }
+        .status.error { color: #e74c3c; }
+        .status.info { color: #3498db; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Release Notes Composer - Local Test Page</h1>
+        
+        <div class="test-section">
+            <h3>🔍 Server Health Check</h3>
+            <button onclick="checkHealth()">Check Server Health</button>
+            <button onclick="getServerInfo()">Get Server Info</button>
+            <div id="health-result" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🚀 GitHub Webhook Simulation</h3>
+            <button onclick="testWebhook('pull_request')">Test PR Webhook</button>
+            <button onclick="testWebhook('push')">Test Push Webhook</button>
+            <button onclick="testWebhook('release')">Test Release Webhook</button>
+            <div id="webhook-result" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📋 Mock Data</h3>
+            <button onclick="getMockData()">Get All Mock Data</button>
+            <button onclick="getJiraData()">Get JIRA Data</button>
+            <div id="data-result" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📝 Manual Release Notes Generation</h3>
+            <button onclick="generateReleaseNotes()">Generate Release Notes</button>
+            <div id="generation-result" class="result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const SERVER_URL = 'http://localhost:3000';
+
+        function showResult(elementId, content, isSuccess = true, isError = false) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = `result ${isSuccess ? 'success' : ''} ${isError ? 'error' : ''}`;
+            
+            if (typeof content === 'object') {
+                element.innerHTML = `<div class="status ${isSuccess ? 'success' : isError ? 'error' : 'info'}">${isSuccess ? '✅ Success' : isError ? '❌ Error' : 'ℹ️ Info'}</div>${JSON.stringify(content, null, 2)}`;
+            } else {
+                element.innerHTML = `<div class="status ${isSuccess ? 'success' : isError ? 'error' : 'info'}">${isSuccess ? '✅ Success' : isError ? '❌ Error' : 'ℹ️ Info'}</div>${content}`;
+            }
+        }
+
+        async function checkHealth() {
+            try {
+                const response = await fetch(`${SERVER_URL}/health`);
+                const data = await response.json();
+                showResult('health-result', data, true);
+            } catch (error) {
+                showResult('health-result', `Error: ${error.message}`, false, true);
+            }
+        }
+
+        async function getServerInfo() {
+            try {
+                const response = await fetch(`${SERVER_URL}/`);
+                const data = await response.json();
+                showResult('health-result', data, true);
+            } catch (error) {
+                showResult('health-result', `Error: ${error.message}`, false, true);
+            }
+        }
+
+        async function testWebhook(eventType) {
+            try {
+                const mockPayload = {
+                    action: 'closed',
+                    pull_request: {
+                        number: 123,
+                        title: 'Add authentication feature',
+                        merged_at: '2025-08-09T12:00:00Z',
+                        commits_url: 'https://api.github.com/repos/owner/repo/pulls/123/commits',
+                        user: { login: 'developer123' }
+                    },
+                    repository: {
+                        name: 'my-release-notes-composer',
+                        full_name: 'owner/my-release-notes-composer'
+                    }
+                };
+
+                const response = await fetch(`${SERVER_URL}/webhook`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-GitHub-Event': eventType
+                    },
+                    body: JSON.stringify(mockPayload)
+                });
+
+                const data = await response.text();
+                showResult('webhook-result', `Event Type: ${eventType}\nResponse: ${data}`, true);
+            } catch (error) {
+                showResult('webhook-result', `Error: ${error.message}`, false, true);
+            }
+        }
+
+        async function getMockData() {
+            try {
+                const response = await fetch(`${SERVER_URL}/mock-data`);
+                const data = await response.json();
+                showResult('data-result', data, true);
+            } catch (error) {
+                showResult('data-result', `Error: ${error.message}`, false, true);
+            }
+        }
+
+        async function getJiraData() {
+            try {
+                const response = await fetch(`${SERVER_URL}/jira`);
+                const data = await response.json();
+                showResult('data-result', data, true);
+            } catch (error) {
+                showResult('data-result', `Error: ${error.message}`, false, true);
+            }
+        }
+
+        async function generateReleaseNotes() {
+            try {
+                const response = await fetch(`${SERVER_URL}/webhook`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-GitHub-Event': 'pull_request'
+                    },
+                    body: JSON.stringify({
+                        action: 'closed',
+                        pull_request: {
+                            number: 124,
+                            title: 'Fix payment gateway bug',
+                            merged_at: '2025-08-10T12:00:00Z',
+                            commits: [
+                                { sha: 'g7h8i9', message: 'Fix transaction issue' },
+                                { sha: 'j0k1l2', message: 'Add logging for payment errors' }
+                            ]
+                        }
+                    })
+                });
+
+                const data = await response.text();
+                showResult('generation-result', `Generated Release Notes:\n${data}`, true);
+            } catch (error) {
+                showResult('generation-result', `Error: ${error.message}`, false, true);
+            }
+        }
+
+        // Auto-check server health when page loads
+        window.onload = function() {
+            checkHealth();
+        };
+    </script>
+</body>
+</html>

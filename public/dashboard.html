@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worldclass SDLC Suite</title>
+    <link rel="stylesheet" href="/ui/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Worldclass SDLC Suite</h1>
+        <p>AI-native, agentic-first product for release management</p>
+    </header>
+
+    <main class="grid">
+      <section class="card span-12">
+        <div class="row">
+          <label class="switch"><input type="checkbox" id="postTeams"><span>Post to Teams</span></label>
+          <label class="switch"><input type="checkbox" id="indexGraph"><span>Index in Graph</span></label>
+          <label class="switch"><input type="checkbox" id="showProv" checked><span>Show provenance in cards</span></label>
+          <a class="btn" href="/metrics" target="_blank">/metrics</a>
+          <a class="btn" href="/events" target="_blank">SSE (raw)</a>
+          <a class="btn" href="/ui/teams.html" target="_blank">Teams Preview</a>
+        </div>
+      </section>
+
+      <section class="card span-12">
+        <h3>Goal Runner</h3>
+        <div class="row">
+          <input id="goalText" class="text" placeholder="e.g., produce release notes for customers"/>
+          <button class="btn" id="btnGoal">Run Goal</button>
+        </div>
+        <pre id="outGoal">—</pre>
+      </section>
+
+      <section class="card">
+        <h3>Release Notes</h3>
+        <div class="row">
+          <button class="btn" id="btnRN">Generate</button>
+          <div class="drop"><button class="btn">Export ▾</button><div class="menu">
+            <button data-exp="rn:md">Markdown (.md)</button>
+            <button data-exp="rn:html">HTML (.html)</button>
+            <button data-exp="rn:confluence">Confluence HTML (.html)</button>
+            <button data-exp="rn:json">JSON (.json)</button>
+          </div></div>
+          <button class="btn" id="btnRNTeamsPreview">Preview</button>
+          <button class="btn" id="btnRNTeamsPreviewApprove">Preview (with Approve)</button>
+          <button class="btn" id="btnRNTeamsPost">Post</button>
+          <button class="btn" id="btnRNTeamsPostApprove">Post (with Approve)</button>
+          <button class="btn" id="btnRNCopy">Copy</button>
+        </div>
+        <pre id="outRN">—</pre>
+      </section>
+
+      <section class="card">
+        <h3>Incidents</h3>
+        <div class="row">
+          <button class="btn" id="btnINC">Show</button>
+          <div class="drop"><button class="btn">Export ▾</button><div class="menu">
+            <button data-exp="inc:md">Markdown (.md)</button>
+            <button data-exp="inc:html">HTML (.html)</button>
+            <button data-exp="inc:json">JSON (.json)</button>
+          </div></div>
+          <button class="btn" id="btnINCTeamsPreview">Preview</button>
+          <button class="btn" id="btnINCTeamsPreviewApprove">Preview (with Approve)</button>
+          <button class="btn" id="btnINCTeamsPost">Post</button>
+          <button class="btn" id="btnINCTeamsPostApprove">Post (with Approve)</button>
+          <button class="btn" id="btnINCCopy">Copy</button>
+        </div>
+        <pre id="outINC">—</pre>
+      </section>
+
+      <section class="card">
+        <h3>What changed for me?</h3>
+        <div class="row">
+          <input id="email" class="text" placeholder="your.email@company.com"/>
+          <button class="btn" id="btnMyRN">Generate Mine</button>
+          <div class="drop"><button class="btn">Export ▾</button><div class="menu">
+            <button data-exp="myrn:md">Markdown (.md)</button>
+            <button data-exp="myrn:html">HTML (.html)</button>
+            <button data-exp="myrn:confluence">Confluence HTML (.html)</button>
+          </div></div>
+          <button class="btn" id="btnMyCopy">Copy</button>
+        </div>
+        <pre id="outMyRN">—</pre>
+      </section>
+
+      <section class="card">
+        <h3>API Diff</h3>
+        <div class="row">
+          <button class="btn" id="btnAPI">Run Demo</button>
+          <div class="drop"><button class="btn">Export ▾</button><div class="menu">
+            <button data-exp="api:json">JSON (.json)</button>
+            <button data-exp="api:html">HTML (.html)</button>
+          </div></div>
+          <button class="btn" id="btnAPICopy">Copy</button>
+        </div>
+        <pre id="outAPI">—</pre>
+      </section>
+
+      <section class="card span-12">
+        <h3>Migration Checklist (from OpenAPI diff)</h3>
+        <div class="row">
+          <input id="jiraParent" class="text" placeholder="JIRA parent key (e.g., PROJ-123) — optional"/>
+          <button class="btn" id="btnChecklist">Generate</button>
+          <button class="btn" id="btnChecklistJira">Create JIRA Subtasks</button>
+        </div>
+        <pre id="outChecklist">—</pre>
+      </section>
+
+      <section class="card">
+        <h3>Cost Drift</h3>
+        <div class="row">
+          <button class="btn" id="btnCOST">Compute</button>
+          <div class="drop"><button class="btn">Export ▾</button><div class="menu">
+            <button data-exp="cost:txt">Text (.txt)</button>
+            <button data-exp="cost:html">HTML (.html)</button>
+            <button data-exp="cost:json">JSON (.json)</button>
+          </div></div>
+          <button class="btn" id="btnCOSTCopy">Copy</button>
+        </div>
+        <pre id="outCOST">—</pre>
+      </section>
+
+      <section class="card span-12">
+        <h3>Agent Logs <span class="badge">SSE</span></h3>
+        <div class="row"><button class="btn" id="btnAGENT">Run Default Play</button></div>
+        <pre id="outLOG">—</pre>
+      </section>
+
+      <!-- NEW: Feature Mapping Editor -->
+      <section class="card span-12">
+        <h3>Feature Mapping (Labels/Repos → Feature)</h3>
+        <div class="row">
+          <button class="btn" id="btnLoadMap">Load</button>
+          <button class="btn" id="btnSaveMap">Save</button>
+          <span id="mapStatus" class="pill">idle</span>
+        </div>
+        <textarea id="mapEditor" placeholder='{"features":[{"name":"Auth","labels":["auth"]}]}'></textarea>
+      </section>
+
+      <section class="card span-12">
+        <h3>Truth Audit & Demo Data</h3>
+        <div class="row">
+          <button class="btn" id="btnAudit">Run Truth Audit</button>
+          <button class="btn" id="btnAuditStrict">Run Audit (strict)</button>
+          <button class="btn" id="btnSeed">Seed Demo Data</button>
+        </div>
+        <pre id="outAudit">—</pre>
+      </section>
+    </main>
+
+    <script src="/ui/app.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,30 @@
+name: API Gatekeeper
+on:
+  pull_request:
+    paths:
+      - 'data/openapi_*.json'
+      - 'openapi/*.json'
+      - 'openapi/*.yaml'
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - name: Prepare demo specs if missing
+        run: |
+          if [ ! -f data/openapi_before.json ]; then
+            mkdir -p data
+            echo '{"openapi":"3.0.0","paths":{"/x":{"get":{}}},"components":{"schemas":{"U":{"properties":{"email":{},"id":{}}}}}}' > data/openapi_before.json
+          fi
+          if [ ! -f data/openapi_after.json ]; then
+            echo '{"openapi":"3.0.0","paths":{},"components":{"schemas":{"U":{"properties":{"id":{}}}}}}' > data/openapi_after.json
+          fi
+      - name: Run Gatekeeper
+        env:
+          BEFORE_SPEC: data/openapi_before.json
+          AFTER_SPEC: data/openapi_after.json
+        run: node scripts/checkOpenApiBreaking.js

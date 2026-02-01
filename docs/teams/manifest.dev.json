@@ -1,0 +1,38 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.17/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.17",
+  "id": "00000000-0000-0000-0000-000000000000",
+  "version": "0.2.0",
+  "packageName": "worldclass-sdlc-suite",
+  "developer": { "name": "Worldclass SDLC", "websiteUrl": "https://example.com", "privacyUrl": "https://example.com/privacy", "termsOfUseUrl": "https://example.com/terms" },
+  "name": { "short": "SDLC Suite", "full": "Worldclass SDLC Suite" },
+  "description": { "short": "SDLC communication layer for Teams", "full": "Auto-draft release notes, incident updates, API change reports, and FinOps digests. Approve and publish in Teams." },
+  "icons": { "color": "color.png", "outline": "outline.png" },
+  "accentColor": "#6264A7",
+  "staticTabs": [
+    {
+      "entityId": "dashboard",
+      "name": "Dashboard",
+      "contentUrl": "https://YOUR_HOST/ui/dashboard.html",
+      "websiteUrl": "https://YOUR_HOST/ui/dashboard.html",
+      "scopes": [ "personal" ]
+    }
+  ],
+  "composeExtensions": [
+    {
+      "botId": "00000000-0000-0000-0000-000000000000",
+      "canUpdateConfiguration": false,
+      "commands": [
+        {
+          "id": "insert-latest-release",
+          "type": "query",
+          "title": "Insert latest approved release note",
+          "description": "Insert text of latest approved release note",
+          "parameters": [{ "name": "kind", "title": "kind", "description": "release|incident", "inputType": "text" }]
+        }
+      ]
+    }
+  ],
+  "validDomains": [ "YOUR_HOST" ],
+  "permissions": [ "identity", "messageTeamMembers" ]
+}

@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Teams Card Preview</title>
+<link rel="stylesheet" href="/ui/styles.css"/>
+<script src="https://unpkg.com/adaptivecards/dist/adaptivecards.min.js"></script>
+<main class="grid" style="max-width:800px">
+  <section class="card span-12">
+    <h3>Adaptive Card Preview</h3>
+    <div id="cardHost"></div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn" id="btnPost">Post to Teams</button>
+      <button class="btn" id="btnCopy">Copy JSON</button>
+    </div>
+  </section>
+</main>
+<script>
+  const raw = sessionStorage.getItem("teamsCard") || '{"type":"AdaptiveCard","version":"1.5","body":[{"type":"TextBlock","text":"No card","size":"Large"}]}';
+  const card = JSON.parse(raw);
+  const ac = new AdaptiveCards.AdaptiveCard(); ac.version = new AdaptiveCards.Version(1,5); ac.parse(card);
+  document.getElementById("cardHost").appendChild(ac.render());
+  document.getElementById("btnCopy").onclick = ()=>{ navigator.clipboard.writeText(JSON.stringify(card,null,2)); alert("Copied"); };
+  document.getElementById("btnPost").onclick = async ()=>{
+    const res = await fetch("/teams/post-card",{ method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(card) });
+    alert(res.ok ? "Posted to Teams" : "Teams post failed");
+  };
+</script>
+</html>

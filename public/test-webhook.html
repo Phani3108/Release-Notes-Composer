@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Release Notes Composer + Incident Explainer Bot - Test Interface</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        .test-btn:hover {
+            background: #45a049;
+        }
+        .test-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+        .result {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 15px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .endpoint-info {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            background: #f8f9fa;
+            margin: 5px 0;
+            padding: 8px 12px;
+            border-radius: 3px;
+            border-left: 4px solid #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 Release Notes Composer + Incident Explainer Bot</h1>
+        <p>Local Development Test Interface</p>
+    </div>
+
+    <div class="test-section">
+        <h2>🔍 Server Status & Info</h2>
+        <button onclick="checkServerHealth()" class="test-btn">Check Server Health</button>
+        <button onclick="getServerInfo()" class="test-btn">Get Server Info</button>
+        <div id="serverStatus"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>📝 Release Notes Composer Testing</h2>
+        <button onclick="testWebhook()" class="test-btn">Test GitHub Webhook</button>
+        <button onclick="getMockData()" class="test-btn">Get Mock Data</button>
+        <button onclick="testJiraEndpoint()" class="test-btn">Get JIRA Data</button>
+        <button onclick="generateReleaseNotes()" class="test-btn">Generate Release Notes</button>
+        <div id="releaseNotesResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🚨 Incident Explainer Bot Testing</h2>
+        <button onclick="testGrafanaAlert()" class="test-btn">Test Grafana Alert</button>
+        <div id="incidentResult"></div>
+    </div>
+
+    <div class="endpoint-info">
+        <h3>📋 Available Endpoints</h3>
+        <ul class="feature-list">
+            <li><strong>POST /webhook</strong> - GitHub webhook endpoint (mock)</li>
+            <li><strong>GET /jira</strong> - JIRA API endpoint (mock)</li>
+            <li><strong>POST /grafana-alert</strong> - Grafana alert endpoint (mock)</li>
+            <li><strong>GET /mock-data</strong> - View all mock data</li>
+            <li><strong>GET /health</strong> - Health check</li>
+            <li><strong>GET /</strong> - Server info</li>
+        </ul>
+    </div>
+
+    <script>
+        const SERVER_URL = 'http://localhost:3000';
+
+        async function checkServerHealth() {
+            try {
+                const response = await fetch(`${SERVER_URL}/health`);
+                const data = await response.json();
+                document.getElementById('serverStatus').innerHTML = `
+                    <div class="status success">
+                        ✅ Server is healthy! Status: ${data.status}
+                    </div>
+                    <div class="result">${JSON.stringify(data, null, 2)}</div>
+                `;
+            } catch (error) {
+                document.getElementById('serverStatus').innerHTML = `
+                    <div class="status error">
+                        ❌ Server health check failed: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        async function getServerInfo() {
+            try {
+                const response = await fetch(`${SERVER_URL}/`);
+                const data = await response.json();
+                document.getElementById('serverStatus').innerHTML = `
+                    <div class="status success">
+                        ✅ Server info retrieved successfully!
+                    </div>
+                    <div class="result">${JSON.stringify(data, null, 2)}</div>
+                `;
+            } catch (error) {
+                document.getElementById('serverStatus').innerHTML = `
+                    <div class="status error">
+                        ❌ Failed to get server info: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        async function testWebhook() {
+            try {
+                const webhookData = {
+                    action: 'closed',
+                    pull_request: {
+                        number: 123,
+                        title: 'Add authentication feature',
+                        merged_at: '2025-08-09T12:00:00Z',
+                        commits_url: 'https://api.github.com/repos/owner/repo/pulls/123/commits',
+                        user: { login: 'developer123' }
+                    },
+                    repository: {
+                        name: 'my-release-notes-composer',
+                        full_name: 'owner/my-release-notes-composer'
+                    }
+                };
+
+                const response = await fetch(`${SERVER_URL}/webhook`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(webhookData)
+                });
+
+                const result = await response.text();
+                document.getElementById('releaseNotesResult').innerHTML = `
+                    <div class="status success">
+                        ✅ Webhook test successful!
+                    </div>
+                    <div class="result">Response: ${result}</div>
+                `;
+            } catch (error) {
+                document.getElementById('releaseNotesResult').innerHTML = `
+                    <div class="status error">
+                        ❌ Webhook test failed: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        async function getMockData() {
+            try {
+                const response = await fetch(`${SERVER_URL}/mock-data`);
+                const data = await response.json();
+                document.getElementById('releaseNotesResult').innerHTML = `
+                    <div class="status success">
+                        ✅ Mock data retrieved successfully!
+                    </div>
+                    <div class="result">${JSON.stringify(data, null, 2)}</div>
+                `;
+            } catch (error) {
+                document.getElementById('releaseNotesResult').innerHTML = `
+                    <div class="status error">
+                        ❌ Failed to get mock data: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        async function testJiraEndpoint() {
+            try {
+                const response = await fetch(`${SERVER_URL}/jira`);
+                const data = await response.json();
+                document.getElementById('releaseNotesResult').innerHTML = `
+                    <div class="status success">
+                        ✅ JIRA data retrieved successfully!
+                    </div>
+                    <div class="result">${JSON.stringify(data, null, 2)}</div>
+                `;
+            } catch (error) {
+                document.getElementById('releaseNotesResult').innerHTML = `
+                    <div class="status error">
+                        ❌ Failed to get JIRA data: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        async function testGrafanaAlert() {
+            try {
+                const response = await fetch(`${SERVER_URL}/grafana-alert`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                });
+
+                const result = await response.text();
+                document.getElementById('incidentResult').innerHTML = `
+                    <div class="status success">
+                        ✅ Grafana alert test successful!
+                    </div>
+                    <div class="result">${result}</div>
+                `;
+            } catch (error) {
+                document.getElementById('incidentResult').innerHTML = `
+                    <div class="status error">
+                        ❌ Grafana alert test failed: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        async function generateReleaseNotes() {
+            try {
+                // Simulate generating release notes
+                const response = await fetch(`${SERVER_URL}/webhook`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'closed',
+                        pull_request: {
+                            number: 124,
+                            title: 'Fix payment gateway bug',
+                            merged_at: '2025-08-10T12:00:00Z'
+                        }
+                    })
+                });
+
+                const result = await response.text();
+                document.getElementById('releaseNotesResult').innerHTML = `
+                    <div class="status success">
+                        ✅ Release notes generated successfully!
+                    </div>
+                    <div class="result">${result}</div>
+                `;
+            } catch (error) {
+                document.getElementById('releaseNotesResult').innerHTML = `
+                    <div class="status error">
+                        ❌ Failed to generate release notes: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Auto-check server health on page load
+        window.onload = function() {
+            checkServerHealth();
+        };
+    </script>
+</body>
+</html>
+
+
+

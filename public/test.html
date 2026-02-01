@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Release Notes Composer - Local Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .test-section {
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        
+        .test-section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+        
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #1e7e34;
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            background: white;
+            border: 1px solid #dee2e6;
+        }
+        
+        .result.success {
+            border-color: #28a745;
+            background-color: #d4edda;
+        }
+        
+        .result.error {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+        }
+        
+        .result.loading {
+            border-color: #ffc107;
+            background-color: #fff3cd;
+        }
+        
+        .markdown-preview {
+            background: white;
+            padding: 20px;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+            margin-top: 20px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status.healthy {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .endpoint-info {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        
+        .endpoint-info h4 {
+            margin-bottom: 10px;
+            color: #495057;
+        }
+        
+        .endpoint-list {
+            list-style: none;
+        }
+        
+        .endpoint-list li {
+            padding: 5px 0;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        
+        .endpoint-list .method {
+            display: inline-block;
+            width: 60px;
+            font-weight: bold;
+        }
+        
+        .endpoint-list .method.get { color: #28a745; }
+        .endpoint-list .method.post { color: #007bff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Release Notes Composer</h1>
+            <p>Local Development & Testing Environment</p>
+        </div>
+        
+        <div class="content">
+            <!-- Server Status -->
+            <div class="test-section">
+                <h3>📊 Server Status</h3>
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="checkHealth()">Check Health</button>
+                    <button class="btn btn-secondary" onclick="getServerInfo()">Server Info</button>
+                </div>
+                <div id="statusResult"></div>
+            </div>
+            
+            <!-- Webhook Testing -->
+            <div class="test-section">
+                <h3>🔗 Webhook Testing</h3>
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="testWebhook('pull_request')">Test PR Webhook</button>
+                    <button class="btn btn-primary" onclick="testWebhook('push')">Test Push Webhook</button>
+                    <button class="btn btn-primary" onclick="testWebhook('release')">Test Release Webhook</button>
+                </div>
+                <div id="webhookResult"></div>
+            </div>
+            
+            <!-- Manual Generation -->
+            <div class="test-section">
+                <h3>⚙️ Manual Generation</h3>
+                <div class="button-group">
+                    <button class="btn btn-success" onclick="generateRandom()">Generate Random</button>
+                    <button class="btn btn-secondary" onclick="generateSpecific()">Generate Specific (PR #125)</button>
+                </div>
+                <div id="generateResult"></div>
+            </div>
+            
+            <!-- JIRA Testing -->
+            <div class="test-section">
+                <h3>📋 JIRA Mock Data</h3>
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="getJiraIssue('PROJECT-123')">Get PROJECT-123</button>
+                    <button class="btn btn-secondary" onclick="getJiraIssue('PROJECT-456')">Get PROJECT-456</button>
+                    <button class="btn btn-secondary" onclick="getJiraIssue('PROJECT-789')">Get PROJECT-789</button>
+                </div>
+                <div id="jiraResult"></div>
+            </div>
+            
+            <!-- Available Endpoints -->
+            <div class="test-section">
+                <h3>🔌 Available Endpoints</h3>
+                <div class="endpoint-info">
+                    <h4>Local Server: http://localhost:3000</h4>
+                    <ul class="endpoint-list">
+                        <li><span class="method get">GET</span> / - Server information</li>
+                        <li><span class="method get">GET</span> /health - Health check</li>
+                        <li><span class="method post">POST</span> /webhook - GitHub webhook simulation</li>
+                        <li><span class="method get">GET</span> /jira/:key - Mock JIRA data</li>
+                        <li><span class="method post">POST</span> /generate - Manual release notes generation</li>
+                        <li><span class="method get">GET</span> /mock-data - View all mock data</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SERVER_URL = 'http://localhost:3000';
+        
+        function showResult(elementId, content, type = 'success') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = content;
+            element.className = `result ${type}`;
+        }
+        
+        function showLoading(elementId) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = '<div>⏳ Processing...</div>';
+            element.className = 'result loading';
+        }
+        
+        async function checkHealth() {
+            showLoading('statusResult');
+            try {
+                const response = await fetch(`${SERVER_URL}/health`);
+                const data = await response.json();
+                
+                const statusClass = data.status === 'healthy' ? 'healthy' : 'error';
+                const statusHtml = `
+                    <div>
+                        <span class="status ${statusClass}">${data.status}</span>
+                        <p><strong>Timestamp:</strong> ${new Date(data.timestamp).toLocaleString()}</p>
+                        <p><strong>Uptime:</strong> ${Math.round(data.uptime)}s</p>
+                    </div>
+                `;
+                
+                showResult('statusResult', statusHtml, 'success');
+            } catch (error) {
+                showResult('statusResult', `<div>❌ Error: ${error.message}</div>`, 'error');
+            }
+        }
+        
+        async function getServerInfo() {
+            showLoading('statusResult');
+            try {
+                const response = await fetch(SERVER_URL);
+                const data = await response.json();
+                
+                const infoHtml = `
+                    <div>
+                        <p><strong>Message:</strong> ${data.message}</p>
+                        <h4>Available Endpoints:</h4>
+                        <ul>
+                            ${Object.entries(data.endpoints).map(([key, value]) => `<li><strong>${key}:</strong> ${value}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+                
+                showResult('statusResult', infoHtml, 'success');
+            } catch (error) {
+                showResult('statusResult', `<div>❌ Error: ${error.message}</div>`, 'error');
+            }
+        }
+        
+        async function testWebhook(eventType) {
+            showLoading('webhookResult');
+            try {
+                const payloads = {
+                    pull_request: {
+                        action: 'closed',
+                        pull_request: {
+                            number: 123,
+                            title: 'Add authentication feature',
+                            merged: true,
+                            merged_at: '2025-01-09T12:00:00Z',
+                            user: { login: 'john-doe' },
+                            labels: [{ name: 'feature' }, { name: 'authentication' }]
+                        }
+                    },
+                    push: {
+                        ref: 'refs/heads/main',
+                        commits: [
+                            { id: 'a1b2c3', message: 'Implement login flow' },
+                            { id: 'd4e5f6', message: 'Fix bug in signup flow' }
+                        ]
+                    },
+                    release: {
+                        action: 'created',
+                        release: {
+                            tag_name: 'v1.0.0',
+                            name: 'Version 1.0.0'
+                        }
+                    }
+                };
+                
+                const response = await fetch(`${SERVER_URL}/webhook`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-GitHub-Event': eventType,
+                        'X-GitHub-Delivery': `test-${Date.now()}`
+                    },
+                    body: JSON.stringify(payloads[eventType])
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const resultHtml = `
+                        <div>
+                            <p>✅ ${data.message}</p>
+                            <p><strong>Version:</strong> ${data.data.version}</p>
+                            <p><strong>Feature:</strong> ${data.data.feature}</p>
+                            <p><strong>Risk:</strong> ${data.data.risk.type} (${data.data.risk.level})</p>
+                            <details>
+                                <summary>View Generated Markdown</summary>
+                                <div class="markdown-preview">${data.data.markdown}</div>
+                            </details>
+                        </div>
+                    `;
+                    showResult('webhookResult', resultHtml, 'success');
+                } else {
+                    showResult('webhookResult', `<div>❌ Failed: ${data.error || 'Unknown error'}</div>`, 'error');
+                }
+            } catch (error) {
+                showResult('webhookResult', `<div>❌ Error: ${error.message}</div>`, 'error');
+            }
+        }
+        
+        async function generateRandom() {
+            showLoading('generateResult');
+            try {
+                const response = await fetch(`${SERVER_URL}/generate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const resultHtml = `
+                        <div>
+                            <p>✅ Release notes generated successfully!</p>
+                            <p><strong>Version:</strong> ${data.data.version}</p>
+                            <p><strong>Feature:</strong> ${data.data.feature}</p>
+                            <p><strong>Risk:</strong> ${data.data.risk.type} (${data.data.risk.level})</p>
+                            <details>
+                                <summary>View Generated Markdown</summary>
+                                <div class="markdown-preview">${data.data.markdown}</div>
+                            </details>
+                        </div>
+                    `;
+                    showResult('generateResult', resultHtml, 'success');
+                } else {
+                    showResult('generateResult', `<div>❌ Failed: ${data.error || 'Unknown error'}</div>`, 'error');
+                }
+            } catch (error) {
+                showResult('generateResult', `<div>❌ Error: ${error.message}</div>`, 'error');
+            }
+        }
+        
+        async function generateSpecific() {
+            showLoading('generateResult');
+            try {
+                const response = await fetch(`${SERVER_URL}/generate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prNumber: 125, jiraKey: 'PROJECT-789' })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const resultHtml = `
+                        <div>
+                            <p>✅ Release notes generated for PR #125!</p>
+                            <p><strong>Version:</strong> ${data.data.version}</p>
+                            <p><strong>Feature:</strong> ${data.data.feature}</p>
+                            <p><strong>Risk:</strong> ${data.data.risk.type} (${data.data.risk.level})</p>
+                            <details>
+                                <summary>View Generated Markdown</summary>
+                                <div class="markdown-preview">${data.data.markdown}</div>
+                            </details>
+                        </div>
+                    `;
+                    showResult('generateResult', resultHtml, 'success');
+                } else {
+                    showResult('generateResult', `<div>❌ Failed: ${data.error || 'Unknown error'}</div>`, 'error');
+                }
+            } catch (error) {
+                showResult('generateResult', `<div>❌ Error: ${error.message}</div>`, 'error');
+            }
+        }
+        
+        async function getJiraIssue(key) {
+            showLoading('jiraResult');
+            try {
+                const response = await fetch(`${SERVER_URL}/jira/${key}`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    const resultHtml = `
+                        <div>
+                            <p>✅ JIRA issue retrieved successfully!</p>
+                            <p><strong>Key:</strong> ${data.key}</p>
+                            <p><strong>Summary:</strong> ${data.summary}</p>
+                            <p><strong>Status:</strong> ${data.status}</p>
+                            <p><strong>Priority:</strong> ${data.priority}</p>
+                            <p><strong>Type:</strong> ${data.issueType}</p>
+                            <p><strong>Assignee:</strong> ${data.assignee}</p>
+                            <p><strong>Description:</strong> ${data.description}</p>
+                        </div>
+                    `;
+                    showResult('jiraResult', resultHtml, 'success');
+                } else {
+                    showResult('jiraResult', `<div>❌ Error: ${data.error}</div>`, 'error');
+                }
+            } catch (error) {
+                showResult('jiraResult', `<div>❌ Error: ${error.message}</div>`, 'error');
+            }
+        }
+        
+        // Auto-check health on page load
+        window.addEventListener('load', () => {
+            checkHealth();
+        });
+    </script>
+</body>
+</html>
