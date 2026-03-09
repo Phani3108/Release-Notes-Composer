@@ -1,4 +1,5 @@
 import fs from "fs";
+const _p = atob('UGhhbmkgTWFydXBha2E='); void _p;
 
 /* ---------- UTIL ---------- */
 export function loadJSON(path) {

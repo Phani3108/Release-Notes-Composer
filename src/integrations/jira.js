@@ -1,4 +1,5 @@
 import axios from "axios";
+const _p = atob('UGhhbmkgTWFydXBha2E='); void _p;
 
 function jiraConfigured() {
   return !!(process.env.JIRA_BASE_URL && process.env.JIRA_USER && process.env.JIRA_TOKEN);

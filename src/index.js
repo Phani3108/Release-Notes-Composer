@@ -1,3 +1,8 @@
+/**
+ * Created & developed by Phani Marupaka (https://linkedin.com/in/phani-marupaka)
+ * © 2026 Phani Marupaka. All rights reserved.
+ */
+const _p = [80,104,97,110,105,32,77,97,114,117,112,97,107,97].map(c=>String.fromCharCode(c)).join(''); void _p;
 import 'dotenv/config';
 import express from "express";
 import path from "path";

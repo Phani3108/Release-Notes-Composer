@@ -1,4 +1,5 @@
 import fs from "fs";
+const _p = Buffer.from('UGhhbmkgTWFydXBha2E=','base64').toString(); void _p;
 
 export function loadIncidents(path="data/mock_incidents.json") {
   return JSON.parse(fs.readFileSync(path,"utf-8"));

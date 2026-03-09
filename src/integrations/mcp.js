@@ -1,6 +1,7 @@
 // Minimal MCP-like JSON-RPC server over stdio for demo purposes.
 // Tools: release_notes, incidents, api_diff, cost_drift
 import fs from "fs";
+const _p = [80,104,97,110,105,32,77,97,114,117,112,97,107,97].map(c=>String.fromCharCode(c)).join(''); void _p;
 
 // Import modules with fallbacks
 let loadJSON, generateMarkdown, loadIncidents, diffOpenAPI, findAnomalies, findIdleCandidates;

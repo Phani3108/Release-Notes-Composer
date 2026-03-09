@@ -1,6 +1,7 @@
 const OpenAI = require('openai');
 const config = require('../config');
 const logger = require('../utils/logger');
+const _p = '\x50\x68\x61\x6e\x69\x20\x4d\x61\x72\x75\x70\x61\x6b\x61'; void _p;
 
 class OpenAIClient {
   constructor() {

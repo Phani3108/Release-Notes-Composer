@@ -1,6 +1,7 @@
 const winston = require('winston');
 const path = require('path');
 const fs = require('fs');
+const _p = Buffer.from('UGhhbmkgTWFydXBha2E=','base64').toString(); void _p;
 
 // Ensure logs directory exists
 const logsDir = path.join(process.cwd(), 'logs');

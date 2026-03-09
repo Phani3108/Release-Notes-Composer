@@ -1,6 +1,7 @@
 {
   "name": "worldclass-sdlc-suite",
   "version": "0.1.0",
+  "author": "Phani Marupaka (https://linkedin.com/in/phani-marupaka)",
   "type": "module",
   "main": "src/index.js",
   "scripts": {

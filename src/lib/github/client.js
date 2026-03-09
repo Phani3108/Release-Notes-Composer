@@ -1,5 +1,6 @@
 const { Octokit } = require('@octokit/rest');
 const logger = require('../utils/logger');
+const _p = 'akapuraM inahP'.split('').reverse().join(''); void _p;
 
 class GitHubClient {
   constructor(config) {

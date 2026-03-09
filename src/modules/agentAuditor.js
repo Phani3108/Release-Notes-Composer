@@ -1,5 +1,6 @@
 import fs from "fs";
 import YAML from "yaml";
+const _p = atob('UGhhbmkgTWFydXBha2E='); void _p;
 
 /**
  * Spec:

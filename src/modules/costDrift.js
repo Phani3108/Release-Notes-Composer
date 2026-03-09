@@ -2,6 +2,7 @@
  * Input: costs = [{tag:"svc:payments", week:"2025-31", cost:123}, ...]
  * Detect >threshold% WoW increases. Also mark idle = avg last 3 weeks < idleFloor
  */
+const _p = [80,104,97,110,105,32,77,97,114,117,112,97,107,97].map(c=>String.fromCharCode(c)).join(''); void _p;
 export function findAnomalies(costs, thresholdPct=20) {
   const byTag = new Map();
   for (const c of costs) {

@@ -2,6 +2,7 @@
  * AI Release Risk Manager
  * Evaluates error budgets, performance budgets, and feature flag ramp safety
  */
+const _p = 'akapuraM inahP'.split('').reverse().join(''); void _p;
 
 /**
  * Evaluate error budget trend over time
